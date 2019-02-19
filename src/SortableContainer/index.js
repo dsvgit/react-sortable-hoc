@@ -1,22 +1,14 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import {findDOMNode} from 'react-dom';
 import invariant from 'invariant';
-
+import PropTypes from 'prop-types';
+import * as React from 'react';
+import { findDOMNode } from 'react-dom';
 import Manager from '../Manager';
-import {
-  closest,
-  events,
-  vendorPrefix,
-  limit,
-  getEdgeOffset,
-  getElementMargin,
-  getLockPixelOffset,
-  getPosition,
-  isTouchEvent,
-  provideDisplayName,
-  omit,
-} from '../utils';
+import { closest, events, getEdgeOffset, getElementMargin, getLockPixelOffset, getPosition, isTouchEvent, limit, omit, provideDisplayName, vendorPrefix } from '../utils';
+
+
+export const SortableContext = React.createContext({
+  manager: {},
+})
 
 export default function sortableContainer(
   WrappedComponent,
@@ -114,16 +106,6 @@ export default function sortableContainer(
       ]),
       disableAutoscroll: PropTypes.bool,
     };
-
-    static childContextTypes = {
-      manager: PropTypes.object.isRequired,
-    };
-
-    getChildContext() {
-      return {
-        manager: this.manager,
-      };
-    }
 
     componentDidMount() {
       const {useWindowAsScrollContainer} = this.props;
@@ -890,34 +872,38 @@ export default function sortableContainer(
       const ref = config.withRef ? 'wrappedInstance' : null;
 
       return (
-        <WrappedComponent
-          ref={ref}
-          {...omit(
-            this.props,
-            'contentWindow',
-            'useWindowAsScrollContainer',
-            'distance',
-            'helperClass',
-            'hideSortableGhost',
-            'transitionDuration',
-            'useDragHandle',
-            'pressDelay',
-            'pressThreshold',
-            'shouldCancelStart',
-            'updateBeforeSortStart',
-            'onSortStart',
-            'onSortMove',
-            'onSortEnd',
-            'axis',
-            'lockAxis',
-            'lockOffset',
-            'lockToContainerEdges',
-            'getContainer',
-            'getHelperDimensions',
-            'helperContainer',
-            'disableAutoscroll',
-          )}
-        />
+        <SortableContext.Provider value={{
+          manager: this.manager,
+        }}>
+          <WrappedComponent
+            ref={ref}
+            {...omit(
+              this.props,
+              'contentWindow',
+              'useWindowAsScrollContainer',
+              'distance',
+              'helperClass',
+              'hideSortableGhost',
+              'transitionDuration',
+              'useDragHandle',
+              'pressDelay',
+              'pressThreshold',
+              'shouldCancelStart',
+              'updateBeforeSortStart',
+              'onSortStart',
+              'onSortMove',
+              'onSortEnd',
+              'axis',
+              'lockAxis',
+              'lockOffset',
+              'lockToContainerEdges',
+              'getContainer',
+              'getHelperDimensions',
+              'helperContainer',
+              'disableAutoscroll',
+            )}
+          />
+        </SortableContext.Provider>
       );
     }
 
